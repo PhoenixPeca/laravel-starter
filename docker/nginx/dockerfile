@@ -6,6 +6,9 @@ RUN apk update && apk add --no-cache nano curl nmap bash && \
 #COPY ./resources/service-wait.sh /docker-entrypoint.d/30-php-fpm-service-wait.sh
 #RUN chmod +x /docker-entrypoint.d/30-php-fpm-service-wait.sh
 
+RUN wget https://raw.githubusercontent.com/PhoenixPeca/laravel-starter/main/docker/nginx/resources/service-wait.sh -O /docker-entrypoint.d/30-php-fpm-service-wait.sh
+RUN chmod +x /docker-entrypoint.d/30-php-fpm-service-wait.sh
+
 HEALTHCHECK --interval=30s \
             --timeout=5s \
             --start-period=1m \

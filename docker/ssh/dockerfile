@@ -31,8 +31,12 @@ RUN usermod -d /var/web -s /bin/bash -u 82 www-data && \
 RUN groupadd -g 1010 node && \
     useradd -u 1010 -g node node
 
-COPY ./resources/user.sh /usr/local/bin/user.sh
-COPY ./resources/entrypoint.sh /usr/local/bin/entrypoint.sh
+#COPY ./resources/user.sh /usr/local/bin/user.sh
+#COPY ./resources/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN wget https://raw.githubusercontent.com/PhoenixPeca/laravel-starter/main/docker/ssh/resources/user.sh -O /usr/local/bin/user.sh
+RUN wget https://raw.githubusercontent.com/PhoenixPeca/laravel-starter/main/docker/ssh/resources/entrypoint.sh -O /usr/local/bin/entrypoint.sh
+
 RUN chmod +x /usr/local/bin/entrypoint.sh && \
     chmod +x /usr/local/bin/user.sh
 

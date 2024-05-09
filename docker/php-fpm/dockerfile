@@ -1,6 +1,8 @@
 FROM php:fpm-alpine
 
-COPY ./resources/php.ini $PHP_INI_DIR/php.ini
+#COPY ./resources/php.ini $PHP_INI_DIR/php.ini
+
+RUN wget https://raw.githubusercontent.com/PhoenixPeca/laravel-starter/main/docker/php-fpm/resources/php.ini -O $PHP_INI_DIR/php.ini
 
 RUN mkdir -p /var/tmp/php_sessions && \
     chown -R www-data:www-data /var/tmp/php_sessions
