@@ -3,8 +3,8 @@ FROM nginx:alpine
 RUN apk update && apk add --no-cache nano curl nmap bash && \
     rm -rf /var/cache/apk/*
 
-COPY ./resources/service-wait.sh /docker-entrypoint.d/30-php-fpm-service-wait.sh
-RUN chmod +x /docker-entrypoint.d/30-php-fpm-service-wait.sh
+#COPY ./resources/service-wait.sh /docker-entrypoint.d/30-php-fpm-service-wait.sh
+#RUN chmod +x /docker-entrypoint.d/30-php-fpm-service-wait.sh
 
 HEALTHCHECK --interval=30s \
             --timeout=5s \
