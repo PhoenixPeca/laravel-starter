@@ -1,0 +1,45 @@
+FROM ubuntu:latest
+
+ENV TZ="UTC"
+ENV DEBIAN_FRONTEND="noninteractive"
+
+RUN echo "PATH=\"~/.composer/vendor/bin:$PATH\"" >> /etc/environment
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    nano sudo openssh-server net-tools curl zip unzip git \
+    software-properties-common dnsutils iputils-ping wget \
+    gpg-agent apt-utils
+
+RUN add-apt-repository -y ppa:ondrej/php && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends php-cli composer \
+    php-gd php-xml php-zip php-intl php-bcmath php-gmp php-uuid \
+    php-sqlite3 php-mysql php-curl php-uopz php-soap php-xdebug    
+
+RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && \
+    apt-get update && apt-get install -y nodejs && \
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && apt-get install -y yarn
+
+RUN  rm -rf /var/lib/apt/lists/*
+
+RUN usermod -d /var/web -s /bin/bash -u 82 www-data && \
+    groupmod -g 82 www-data
+
+RUN groupadd -g 1010 node && \
+    useradd -u 1010 -g node node
+
+COPY ./resources/user.sh /usr/local/bin/user.sh
+COPY ./resources/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/user.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+HEALTHCHECK --interval=30s \
+            --timeout=5s \
+            --start-period=1m \
+            --retries=3 \
+            CMD netstat -tlpn | grep sshd || exit 1;

@@ -32,8 +32,8 @@ services:
       - "./data/phpmyadmin/config.inc.php:/etc/phpmyadmin/config.inc.php"
     environment:
       - UPLOAD_LIMIT=1024M
-    expose:
-      - "8081"
+    ports:
+      - "0.0.0.0:8081:80"
 
   php-fpm:
     build:
@@ -70,6 +70,31 @@ services:
       - "0.0.0.0:80:80"
     depends_on:
       - "php-fpm"
+
+  ssh:
+    build:
+      context: "./docker/ssh/"
+      dockerfile: "dockerfile"
+    image: "phoenixaspacio/ssh:latest"
+    volumes:
+      - "./data/web:/var/web"
+      - "./data/ssh/creds/moduli:/etc/ssh/moduli"
+      - "./data/ssh/creds/ssh_host_ecdsa_key:/etc/ssh/ssh_host_ecdsa_key"
+      - "./data/ssh/creds/ssh_host_ecdsa_key.pub:/etc/ssh/ssh_host_ecdsa_key.pub"
+      - "./data/ssh/creds/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key"
+      - "./data/ssh/creds/ssh_host_ed25519_key.pub:/etc/ssh/ssh_host_ed25519_key.pub"
+      - "./data/ssh/creds/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key"
+      - "./data/ssh/creds/ssh_host_rsa_key.pub:/etc/ssh/ssh_host_rsa_key.pub"
+    environment:
+      SSH_USER_1: "aspaciop:31102424"
+    restart: "always"
+    networks:
+      - "phoenix"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    ports:
+      - "0.0.0.0:2222:22"
 
 networks:
 
