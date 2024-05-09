@@ -2,23 +2,6 @@ version: "3.8"
 
 services:
 
-  ghost:
-    build:
-      context: "./docker/ghost/"
-      dockerfile: "dockerfile"
-    image: "phoenixaspacio/ghost:latest"
-    restart: "always"
-    volumes:
-      - "./data/ghost/content:/var/lib/ghost/content"
-      - "./data/ghost/config.production.json:/var/lib/ghost/config.production.json"
-    networks:
-      - "phoenix"
-    dns:
-      - 1.1.1.1
-      - 8.8.8.8
-    expose:
-      - "2368"
-
   mysql:
     build:
       context: "./docker/mysql/"
@@ -33,7 +16,7 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     environment:
-      - MYSQL_ROOT_PASSWORD=96CKTjsLJmUNTUzFzx9fpBMrWeLUEvTtzKVmykwJzSUby7fqba
+      - MYSQL_ROOT_PASSWORD=96CKTjsLJmUNTUzFzx9fpBMrWeLUEvTtzKVmykwJzSUby7fqba!
     ports:
       - "0.0.0.0:3306:3306"
 
@@ -50,7 +33,7 @@ services:
     environment:
       - UPLOAD_LIMIT=1024M
     expose:
-      - "80"
+      - "8081"
 
   php-fpm:
     build:
@@ -84,66 +67,9 @@ services:
       - 1.1.1.1
       - 8.8.8.8
     ports:
-      - "0.0.0.0:81:80"
+      - "0.0.0.0:80:80"
     depends_on:
       - "php-fpm"
-
-  https-portal:
-    container_name: "https-portal"
-    image: steveltn/https-portal:latest
-    restart: always
-    environment:
-      DOMAINS: |
-          aspac.io => https://phoenix.aspac.io,
-          www.aspac.io => https://phoenix.aspac.io,
-          phoenix.aspac.io -> http://ghost:2368,
-          database.aspac.io -> http://phpmyadmin:80,
-          cloud.aspac.io -> http://172.17.0.1:11000,
-          automate.aspac.io -> http://172.17.0.1:8081,
-          accounting.aspac.io -> http://172.17.0.1:8082,
-          globe.aspac.io -> http://nginx:80
-      STAGE: production
-      WEBSOCKET: 'true'
-      CLIENT_MAX_BODY_SIZE: 0
-    volumes: 
-      - "./data/nginx/ssl:/var/lib/https-portal"
-      - "./data/https-portal/logs:/var/log/nginx"
-      - "./data/web:/var/web"
-    networks:
-      - "phoenix"
-    dns:
-      - 1.1.1.1
-      - 8.8.8.8
-    depends_on:
-      - "nginx"
-    ports:
-      - "0.0.0.0:80:80"
-      - "0.0.0.0:443:443"
-
-  ssh:
-    build:
-      context: "./docker/ssh/"
-      dockerfile: "dockerfile"
-    image: "phoenixaspacio/ssh:latest"
-    volumes:
-      - "./data/web:/var/web"
-      - "./data/ssh/creds/moduli:/etc/ssh/moduli"
-      - "./data/ssh/creds/ssh_host_ecdsa_key:/etc/ssh/ssh_host_ecdsa_key"
-      - "./data/ssh/creds/ssh_host_ecdsa_key.pub:/etc/ssh/ssh_host_ecdsa_key.pub"
-      - "./data/ssh/creds/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key"
-      - "./data/ssh/creds/ssh_host_ed25519_key.pub:/etc/ssh/ssh_host_ed25519_key.pub"
-      - "./data/ssh/creds/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key"
-      - "./data/ssh/creds/ssh_host_rsa_key.pub:/etc/ssh/ssh_host_rsa_key.pub"
-    environment:
-      SSH_USER_1: "aspaciop:31102424"
-    restart: "always"
-    networks:
-      - "phoenix"
-    dns:
-      - 1.1.1.1
-      - 8.8.8.8
-    ports:
-      - "0.0.0.0:2222:22"
 
 networks:
 

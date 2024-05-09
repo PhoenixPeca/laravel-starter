@@ -22,7 +22,7 @@
 /data/web/phpmyadmin/tmp
 !/data/web/rak-summit-form*
 !/data/web/ebook-download-tracker*
-!/data/web/html*
+!/data/web/htdocs*
 /data/web-print/*
 !/data/web-print/system/
 /data/web-print/system/cache/*
