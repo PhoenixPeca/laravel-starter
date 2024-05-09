@@ -1,0 +1,11 @@
+FROM mysql:latest
+
+RUN microdnf update && \
+    microdnf install -y net-tools && \
+    microdnf clean all
+
+HEALTHCHECK --interval=30s \
+        --timeout=5s \
+        --start-period=1m \
+        --retries=3 \
+        CMD netstat -tlpn | grep :3306 || exit 1;

@@ -1,0 +1,42 @@
+FROM php:fpm-alpine
+
+COPY ./resources/php.ini $PHP_INI_DIR/php.ini
+
+RUN mkdir -p /var/tmp/php_sessions && \
+    chown -R www-data:www-data /var/tmp/php_sessions
+
+RUN apk update && \
+    apk add --no-cache libzip-dev \
+    oniguruma-dev \
+    libwebp-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libxpm-dev \
+    freetype-dev\
+    imagemagick-dev imagemagick \
+    libxml2-dev curl-dev \
+    icu-dev gmp-dev sqlite-dev \
+    autoconf gcc g++ libtool make git \
+    bzip2-dev && \
+    rm -rf /var/cache/apk/*
+
+RUN docker-php-ext-configure zip
+RUN docker-php-ext-configure gd \
+    --with-webp \
+    --with-xpm \
+    --with-freetype \
+    --with-jpeg
+
+RUN mkdir -p /usr/src/php/ext/ && \
+    curl -L https://pecl.php.net/get/imagick-3.7.0.tgz >> /usr/src/php/ext/imagick.tgz && \
+    tar -xf /usr/src/php/ext/imagick.tgz -C /usr/src/php/ext/ && \
+    rm /usr/src/php/ext/imagick.tgz
+
+RUN docker-php-ext-install xml zip gd intl bcmath gmp mysqli \
+    pdo_sqlite pdo_mysql curl soap exif opcache pdo imagick-3.7.0 bz2
+
+HEALTHCHECK --interval=30s \
+            --timeout=5s \
+            --start-period=1m \
+            --retries=3 \
+            CMD netstat -tlpn | grep php-fpm || exit 1;
